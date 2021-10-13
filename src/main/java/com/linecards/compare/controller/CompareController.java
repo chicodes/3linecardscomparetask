@@ -7,6 +7,8 @@ import com.linecards.compare.Util.CompareAlgorithm;
 import com.linecards.compare.service.CompareService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("student")
+@EnableCaching
 public class CompareController {
 
     @Autowired
@@ -94,6 +97,7 @@ public class CompareController {
     }
 
     @GetMapping("/history")
+    //@Cacheable(key="#id", value="#pO")
     public List<Compare> viewHistory(){
         return compareService.findAllCompare();
     }
@@ -109,11 +113,11 @@ public class CompareController {
         return compareWithPagination;
     }
 
-//    @GetMapping("/history/paginationAndSort/{offset}/{pageSize}/{field}")
-//    public Page<Compare> viewHistoryWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize, @PathVariable String field){
-//        Page<Compare> compareWithPagination =  compareService.findAllCompareWithPaginationAndSorting(offset, pageSize, field);
-//        return compareWithPagination;
-//    }
+    @GetMapping("/history/paginationAndSort/{offset}/{pageSize}/{field}")
+    public Page<Compare> viewHistoryWithPaginationAndSort(@PathVariable int offset, @PathVariable int pageSize, @PathVariable String field){
+        Page<Compare> compareWithPagination =  compareService.findAllCompareWithPaginationAndSorting(offset, pageSize, field);
+        return compareWithPagination;
+    }
 
     @GetMapping("/view-compare-details/{id}")
     public ResponseEntity<Compare> viewCompareDetails(@PathVariable int id){

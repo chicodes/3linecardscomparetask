@@ -34,10 +34,11 @@ public class CompareService {
         return compare;
     }
 
-//    public Page<Compare> findAllCompareWithPaginationAndSorting(int offset, int pageSize, String field){
+    public Page<Compare> findAllCompareWithPaginationAndSorting(int offset, int pageSize, String field){
 //        Page<Compare> compare =  repository.findAll(PageRequest.of(offset,pageSize).withSort(Sort.by(field)));
-//        return compare;
-//    }
+        Page<Compare> compare =  repository.findAll(PageRequest.of(offset,pageSize));
+        return compare;
+    }
 
     public Compare getCompareById(int id){
 

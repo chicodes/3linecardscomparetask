@@ -1,6 +1,7 @@
 package com.linecards.compare.controller;
 
 import com.linecards.compare.Entity.User;
+import com.linecards.compare.Repository.UserRepository;
 import com.linecards.compare.service.JwtUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,22 +10,18 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 import com.linecards.compare.config.JwtTokenUtil;
 import com.linecards.compare.DTO.AuthenticationRequestDto;
-import com.linecards.compare.model.JwtResponse;
+import com.linecards.compare.DTO.AuthenticationResponse;
 import com.linecards.compare.DTO.UserDto;
 
 @RestController
 @CrossOrigin
 @RequestMapping("authenticate")
-public class JwtAuthenticationController {
+public class AuthenticationController {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -35,7 +32,10 @@ public class JwtAuthenticationController {
 	@Autowired
 	private JwtUserDetailsService userDetailsService;
 
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	@Autowired
+	private UserRepository userRepository;
+
+	@PostMapping(value = "/login")
 	public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequestDto authenticationRequest) throws Exception {
 
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -45,12 +45,18 @@ public class JwtAuthenticationController {
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
 
-		return ResponseEntity.ok(new JwtResponse(token));
+		return ResponseEntity.ok(new AuthenticationResponse(token));
 	}
 
-	@RequestMapping(value = "/register", method = RequestMethod.POST)
+	@PostMapping(value = "/register")
 	public ResponseEntity<?> saveUser(@RequestBody UserDto user) throws Exception {
-		return ResponseEntity.ok(userDetailsService.save(user));
+
+		User checkUsernameExist = userRepository.findByUsername(user.getUsername().toString());
+		if(checkUsernameExist == null) {
+			User saveUser = userDetailsService.save(user);
+			return ResponseEntity.ok(saveUser);
+		}
+		return ResponseEntity.ok("User already exist");
 	}
 
 	private void authenticate(String username, String password) throws Exception {
