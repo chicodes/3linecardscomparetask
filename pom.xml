@@ -28,6 +28,11 @@
 					</archive>
 				</configuration>
 			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 	<parent>
@@ -97,5 +102,7 @@
 		</dependency>
 		
 	</dependencies>
+
+	<packaging>jar</packaging>
 
 </project>
